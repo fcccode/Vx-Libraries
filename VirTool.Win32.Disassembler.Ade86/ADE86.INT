@@ -1,0 +1,101 @@
+;;<ASM86 structure>
+; +00	Error code
+; +04	Size of code
+; +08	Pointer to code
+; +0C	Size of debug info
+; +10	Pointer to debug info
+; +14	Used memory
+; +18	Need memory
+; +1C	Lines counter
+; +20	Pass counter
+;;
+
+;;<DIS86 structure>
+; +00	Error code
+; +04	IP
+; +08	Instruction length
+; +09	Data override prefix
+; +0A	Address override prefix
+; +0B	Repeat prefix
+; +0C	Segment override prefix
+; +0D	Bus lock prefix
+; +0E	Opcode addition byte 0Fh
+; +0F	Base opcode byte
+; +10	MODRM byte
+; +11	SIB byte
+; +12	Address constant
+; +16	Selector constant
+; +18	Immediate constant
+; +1C	Flags
+; +20	Pointer to TBL86 structure
+; +24	operand 1
+; +26	operand 2
+; +28	operand 3
+;;
+
+
+;;<Disassemble stack frame>
+; -10	Relative back jump
+; -0C	Stack limit
+; -08	Saved ESP
+; -04	Code size(return value)
+; EBP
+; +08	Code start
+; +0C	Code end
+; +10	Pointer to DIS86 structure
+; +14	Code origin
+; +18	Bits mode
+;;
+
+;;<Print_dis86 stack frame>
+; -0C	Current opernad index
+; -08	Saved ESP
+; -04	Character count(return value)
+; EBP
+; +08	Buffer start
+; +0C	Buffer end
+; +10	Pointer to DIS86
+; +14	Pointer to DBG86
+;;
+
+;;<Assemble stack frame>
+; -60	Error code
+; -5C	IP
+; -58	Instruction length
+; -57	Data override prefix
+; -56	Address override prefix
+; -55	Repeat prefix
+; -54	Segment override prefix
+; -53	Bus lock prefix
+; -52	Opcode addition byte 0Fh
+; -51	Base opcode byte
+; -50	MODRM byte
+; -4F	SIB byte
+; -4E	Address constant
+; -4A	Selector constant
+; -48	Immediate constant
+; -44	Flags
+; -40	Pointer to TBL86 structure
+; -3C	operand 1
+; -3A	operand 2
+; -38	operand 3
+; -30	Map of DIS86 structure
+; -28	Temporary value
+; -20	Expression value
+; -1C	Line counter
+; -18	Current bits
+; -14	Current IP
+; -10	Pass counter
+; -0C	Stack limit
+; -08	Saved ESP
+; -04	Code size (return value)
+;  EBP
+; +08	Memory start
+; +0C	Memory end
+; +10	Source code
+; +14	Code origin
+; +18	Bits mode
+;;
+
+
+

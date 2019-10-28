@@ -1,0 +1,175 @@
+
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   .[        YSPE - YuP'z Shitty Packing Engine!         ].
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+       ÄPowered by YuP - Deithwen Addan - for 29A zinEÄ 
+    
+
+
+     
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  
+  Ä1.Intro - a way to heavenÄ
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+   	YSPE is a shitty compresor engine. As you should know
+        already. It can pack every file ;) but the ratio can
+        be low 0% ... blah, but who cares. I desinged it for 
+        my own purposes, i'm proud of it, so try to under-
+        stand my idea - respect for respect.   
+  
+        
+        
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  
+  Ä2.Algo - realy easy      Ä
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+        
+
+        In this part i will try to describe the "engine".
+        Everybody know that we shouldn't repeat words when
+        we are writing to someone (for example). So as you
+        can see some filez have a lot of repeatz - reloc 
+        section when it's clear have a lot of byte repeatz.
+        My idea is to change this huge byte shit to a specific 
+        string - that is the compression engine! 
+
+        For example:
+        [original file body]: 2222222222222 999999999999 A
+                              |           | |          | |
+                              +-----------+ +----------+ +-[C]
+                              |             |
+                   13 repeatz-+             +12 repeatz 
+                   |                                  |
+                  [A]                                [B]
+
+
+
+       As you can see we have 13 repeatz in point [A] and 12 
+       repeatz in point [B], the [C] point will be unchanged.
+       We can pack point [A] and [B] by replacing the 
+       string to "¥<BYTE_WHICH_IS_REPEATING><HOW_MANY_REPZ>¥"
+       where "¥" are markers of START and END.
+
+
+       From the other hand we have a small problem with
+       <HOW_MANY> string - we must remember that we couldn't
+       make it giant. I found solution for this:
+       You know that highest ascii value is 255, and highest
+       byte is 255 (wow! ;p). So if our counter will be 255
+       we can use the 255 ascii value (one character not 3 -
+       if we put 255 as number (itoa - or sth like this)).
+       Sample, if we have sample byte repeated 256 timez we
+       can write it as: "¥<ORGINAL_BYTE>ÿ¥".
+       Where:
+       'ÿ'(ascii value=255) + ''(ascii value=1) = 256 
+       -do you catch it!? 2 [(ÿ) bytez, not 3 (256)].
+       This difference will be more visible when we will
+       have more byte repeatz (we must take care of size). 
+
+
+       Example: one block from "MessageBoxA Program" reloc
+       section:
+
+       0  1  2  3  4  5  6  7   8  9  A  B  C  D  E  F
+       00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00   ................
+
+       This zer0z can be packed of course! We have a lot 
+       of them not only in reloc section.       
+
+
+       When we strip reloc section file deincrease from 4,00kb
+       application to about 2,00kb file. (LOOK THE TEST_APENDIX!)
+       
+       I don't know that someone find this useful, it's very
+       lame, but what i can say it w0rx! realy w0rx!
+       It can be remaked, you can add inside of packer some
+       crypting engine with a random key or remake it
+       as a virus compresion engine (pack infected filez) and
+       so on. Ohh and one thing left, i want to said that i
+       hadn't ever seen same compression engine. The
+       "algo" and the "thought" is mine, maybe you know
+       that already - if so keep it yourself (i know it too).
+       If not i guess that i help you a bit ...............
+
+
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  
+  Ä3.End - fight to win     Ä
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+       I hope that u liked my article but now i must go, 
+       return to my black reality, all i can say ...
+       - and heart stoped.       
+
+                
+       [ btw. i made a compressor engine it is
+       included at the end of this article APENDIX [B], 
+       the uncompressor is a mirror of compressor - 
+       u can do it yourself!!! if you have any problemz
+       send me a email. cya! ]
+ 
+       @Name:      Lord YuP - Deithwen Addan
+       @Group:     take me - i'm free! ;)
+       @Country:   Poland
+       @E-mail:    yup@tlen.pl
+       @Irc:       #virus    - undernet
+                   #phreakpl - *.irc.pl 
+
+
+
+       @Greetingz: toro     - say "POLISH LAGGING INTERNET"
+                   Spanska  - GatoCOLD!? that was you!?
+
+
+
+      "Jechali wprost w zachodz¹ce s³oñce. Za nimi zostawa³a
+       ciemniej¹ca dolina. Za nimi by³o jezioro, jezioro
+       zaczarowane, jezioro niebieskie i g³adkie jak 
+       oszlifowany szafir. Za nimi zostawa³y g³azy na
+       jeziornym brzegu. Sosny na zboczach.
+       To by³o za nimi.
+       A przed nimi by³o wszystko."
+ 
+                                Ä A.Sapkowski "Pani Jeziora" Ä
+                                    Ä saga o Wiedzminie Ä                              
+                                    
+
+    
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  
+  Ä4.YSPE - compress tests  ÄAPENDIX[A]
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+      Tested filez:
+      1) KERNEL32.DLL    (winME kernel)
+      2) IEXPLORE.EXE    (Internet Explorer 4)
+      3) TD32.EXE        (Turbo Debugger)
+      4) IMPORT32.LIB    (Borland Import Library)
+      5) 29A-5.ZIP       (MHHH!?)
+      6) SAMPLE.DOC      (WORD FILE)
+      7) WALLPAPER.BMP   (800x600 WINDOWS BITMAP)
+      8) MessageBox.EXE  (TASM - WIN32 SAMPLE)
+
+      SIZE IN BYTEZ OF COURSE ;)
+
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+      Ú³SIZE BEFORE COMPRESSION³Ú ÄÛÄ  Ú³SIZE AFTER COMPRESSION³Ú   
+      ÆÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÆ ÄÛÄ  ÆÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÆ
+      1) 544 768                   Û   517 666
+      2) 86 016                    Û   53 520
+      3) 573 440                   Û   551 893
+      4) 467 968                   Û   417 724
+      5) 2 501 904                 Û   2 498 675
+      6) 24 064                    Û   3 341
+      7) 1 440 054                 Û   895 935
+      8) 4 096                     Û   512
+      ÆÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÆ ÄÛÄ  ÆÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÚÆ
+       ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+      As you can see DOC,BMP,EXE filez can be packed. Doc structure
+      have a lot of repeatz so the ratio will be high (look p. 6),
+      the BMP ratio is also high, rest depends on repeatz! 
+      Funny isn't it?
+
+
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  
+  Ä5.YSPE - source of engine  ÄAPENDIX[B]
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ

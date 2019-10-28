@@ -1,0 +1,123 @@
+                                  deroko's disassembly/assembly engine (dde)
+                                                  coded by deroko <deroko<at>gmail<dot>com>
+                                                  http://deroko.headcoders.net
+                                                        
+
+- DDE engine is supposed to find len of instructions and split them into easy modifying structures.
+     Those structures can be used later to insert some code betwen them or modify them, do whatever you
+     want.
+     Example -> sub eax, 1   can be easily changed in struct to add eax, -1 and so on...
+     xor reg,reg to sub reg, reg, or something else... insert jmps between instructions...
+     
+     All instructions are split into struct dde_struct and it's size is 28 bytes.
+     It looks like this:
+     
+struct        dde_struct {
+       DWORD  len;          //instruction len
+       BYTE   cseg;         //filled with seg reg prrefix otherwise=0
+       BYTE   c66;          //filled with prefix 66h, otherwise = 0
+       BYTE   c67;          //filled with prefix 67h, otherwise = 0
+       BYTE   rep;          //F3 or F2 rep prefix, otherwise = 0
+       BYTE   lock;         //lock prefix, otherwise = 0
+       BYTE   opcode;       //opcode byte
+       BYTE   prefix_0F;    //if 2byte long opcode set to 0F, otherwise = 0 
+       BYTE   flags;        //flags
+       union{               //depends on flags set, dispositions for SIB (disp16 doesn't exist)
+       DWORD  disp32;       
+       BYTE   disp8;
+       }disp;
+       BYTE   d8;           //if disp8,  d8 = 1, otherwise = 0
+       BYTE   d32;          //if disp32, d32 = 1, otherwise = 0
+       BYTE   modrm;        //modrm if any, otherwise = 0
+       BYTE   sib;          //sib if any, othervise = 0
+       union{               //immidiate data, depends on C_* flags in flags field
+       DWORD  imm32;
+       WORD   imm16;
+       BYTE   imm8;
+       }imm;
+           
+       BYTE   relative;            //not used yet
+       BYTE   newopcode;           //original or inserted opcode
+       BYTE   dummy1;              //not used yet
+       BYTE   dummy2;              //not used yet
+};
+       
+       Struct is well commented so I don't have to explain it...
+       dummy1, and dummy2 are not used yet, they are here for future use...
+       relative - should be used when analyzing structs to see if there is some jcc/jmp/call that should be
+       modified (not set yet, it should be set by outside engin)
+       newopcode - should be used when new opcode is inserted... For example when you are rellocating
+                   all jmp/jcc/call using this algo:
+       
+       DWORD count, relative, new_rel;
+       dde_struct    *dde;
+       ...   
+       relative = dde->imm.imm32; //or 8 depending on opcode
+       while (relative != count){
+                     if (!dde->newopcode)
+                            count += dde->len;
+                     new_rel += dde_len;
+                     dde++;
+       }                          
+       
+       
+       dde_disass will disassemble each opcode into struct. 
+       flags filed is very importan b/c it will tell dde_asm how to assemble opcode from dde_struct.
+       Here are flags:
+       #define       C_SIZE1             0x01    
+              instruction size is 1 (such push/pop reg), DO NOT combine this with some other
+       #define       C_MODRM             0x02
+              instruction has modrm and can be combined with C_DATA*
+       #define       C_DATA8             0x04
+              instruction is followed by immidiate of 8 bytes, most of jcc
+       #define       C_DATA16            0x08
+              instruction is followed with 16 immidiate data, this depend on C_66 and C_67 if they are set
+       #define       C_DATA32            0x10
+              instruction is followed with 32 immidiate data
+       #define       C_PREFIX            0x20
+              prefix (seg/rep/lock), not used by dde_asm
+       #define       C_2BYTE             0x40 
+              instruction is 2 byte opcode and prefix_0F is set to 0x0F, rest of instruction is held in
+              opcode field, this flag is not used by dde_asm b/c we have prefix_0F in dde_struct   
+       #define       C_66                0x66    //operand size prefix
+       #define       C_67                0x67    //address size prefix       
+       
+       dde_asm will folow this rules:
+              check for prefixes seg,0x67/66, rep, lock and store them if there is any
+              check for 0F if any, and store
+              store opcode
+              check for MODRM if any store
+              check for SIB, if any store
+              check for displacement, if any store
+              check for imm data, if any store
+              returns size of instruction stored...
+
+NOTE: some instructions that have C_DATA16 + C_DATA8 flags set such as enter, 16, 8 have their data placed
+      into imm32 field... It's size is 4 (1 for opcode, 2 for C_DATA16, and 1 for C_DATA8).
+      so when you store imm32 + opcode it will look like this
+      enter 16, 8, *0, assembling next instruction will overwrite uneeded zero or what ever is behind it.
+      So keep rocking...
+
+Syntax:
+       DWORD __stdcall dde_disassm(BYTE *eip, struct dde_struct *dde);
+              BYTE *eip       = pointer to instruction
+              dde_struct *dde = pointer to dde_struct buffer
+       
+       Return values : len of instruction if succesful
+                       on error it returns -1 and dde->len is set to -1       
+              
+       DWORD __stdcall dde_asm(BYTE *assembly, struct dde_struct *dde);
+              BYTE *assembly  = pointer to buffer where instruction should be constructed
+              dde_struct *dde = pointer to dde_struct
+
+       return values : len of instruction from dde->len
+       
+       dde_struct buffer should be set to 0 by user, if this is not set to 0, you might
+       get unpredicted results during dde_asm
+       
+       Well that's it... 
+       
+       BUGS: still unknown
+       
+                                                        deroko <deroko<at>gmail<dot>com
+                                                        http://deroko.headcoders.net      
