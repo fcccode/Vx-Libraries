@@ -1,0 +1,42 @@
+#ifndef _MAELSTROM_HEADER_H_
+#define _MAELSTROM_HEADER_H_
+
+// Flags
+
+#define MAELSTROM_FLAG_PREFIX_ANY (MAELSTROM_FLAG_PREFIX_SEGMENT + MAELSTROM_FLAG_PREFIX_REP + MAELSTROM_FLAG_PREFIX_OPERAND + MAELSTROM_FLAG_PREFIX_LOCK + MAELSTROM_FLAG_PREFIX_ADDRESS)
+#define MAELSTROM_FLAG_IMMEDIATE_ANY (MAELSTROM_FLAG_IMMEDIATE1 + MAELSTROM_FLAG_IMMEDIATE4)
+#define MAELSTROM_FLAG_DISPLACEMENT_ANY (MAELSTROM_FLAG_DISPLACEMENT1 + MAELSTROM_FLAG_DISPLACEMENT4)
+#define MAELSTROM_FLAG_DATA_ANY (MAELSTROM_FLAG_DISPLACEMENT_ANY + MAELSTROM_FLAG_IMMEDIATE_ANY)
+
+#define MAELSTROM_FLAG_DISPLACEMENT1 1 // 8 bit relative address
+#define MAELSTROM_FLAG_IMMEDIATE1 2 // 8 bit data size
+#define MAELSTROM_FLAG_DISPLACEMENT4 4 // 32/16 bit memory address, depending on prefix
+#define MAELSTROM_FLAG_IMMEDIATE4 8 // 32/16 bit immediate size, depending on prefix
+#define MAELSTROM_FLAG_MODRM 16 // Not a single byte opcode
+#define MAELSTROM_FLAG_SIB 32 // SIB byte present after Modrm
+#define MAELSTROM_FLAG_DOUBLE 64 // Only two instructions have this...
+#define MAELSTROM_FLAG_PREFIX_LOCK 128 // F0/0F lock prefix
+#define MAELSTROM_FLAG_SIGNEXTEND 256 // Abnormal register/data sizes
+#define MAELSTROM_FLAG_SINGLE 512 // Single opcode instruction
+#define MAELSTROM_FLAG_PREFIX_REP 1024 // Rep prefix for string instructions
+#define MAELSTROM_FLAG_SEGMENTREG3 2048 // Sreg2 syntax and registers
+#define MAELSTROM_FLAG_SEGMENTREG2 4096 // Sreg3 syntax and registers
+#define MAELSTROM_FLAG_PREFIX_SEGMENT 8192 // Segment prefix
+#define MAELSTROM_FLAG_PREFIX_OPERAND 16384 // 16 bit override
+#define MAELSTROM_FLAG_PREFIX_ADDRESS 32768 // 16 bit override
+
+typedef struct _IA32_X86_INSTRUCTION
+{
+	WORD Flags;
+	CHAR Size;
+	CHAR Opcode;
+	CHAR Sib;
+	CHAR Mod;
+	CHAR Rm;
+	CHAR Reg;
+	CHAR Data[8]; // Displacement/Immediate data, determine between the two with MAELSTROM_FLAG_DISPLACEMENT_ANY/MAELSTROM_FLAG_IMMEDIATE_ANY
+	PVOID Blink;
+	PVOID Flink;
+} IA32_X86_INSTRUCTION, *PIA32_X86_INSTRUCTION;
+
+#endif

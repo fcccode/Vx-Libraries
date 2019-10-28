@@ -1,0 +1,113 @@
+Sub AutoOpen()
+Dim gto%  'number of goto's
+Dim i%    'i
+Dim x%    'x
+Dim lb%   'number of char's in label
+Dim pos%  'position to put goto's at
+Dim pos2% 'position to put the labels at
+Dim ch$   'char var
+Dim ch2$  'char2 var
+Dim ch3$  'char3 var
+Dim lbl$  'label var
+Dim lbl2$ 'label2 var
+Dim lbl3$ 'label3 var
+Dim buf$  'buffer
+On Error Resume Next
+Set cm = Application.VBE.ActiveVBProject.VBComponents("Module1").CodeModule
+
+'First MessageBox
+Call MsgBox("1: End of Declarations", vbOKOnly)
+
+Randomize
+
+'Position to put Goto's at
+pos = cm.CountOfLines / (Int(6 - 4) * Rnd + 4) - 2
+
+'Number of Goto's
+gto = ((Int((6 - 4) * Rnd + 4)))
+
+
+For i = 1 To gto
+'Second MessageBox
+Call MsgBox("2: Start of gto loop", vbOKOnly)
+lb = Int((23 - 5) * Rnd + 5)
+'Third MessageBox
+Call MsgBox("3: Start of lb loop", vbOKOnly)
+    For x = 1 To lb
+    If Int((2 - 1 + 1) * Rnd + 1) = 1 Then
+        ch = Chr(Int(((Int(90 - 66) * Rnd + 66) - 65 + 1) * Rnd + 65))
+        lbl = lbl & ch
+        ch2 = Chr(Int(((Int(90 - 66) * Rnd + 66) - 65 + 1) * Rnd + 65))
+        lbl2 = lbl2 & ch2
+        ch3 = Chr(Int(((Int(90 - 66) * Rnd + 66) - 65 + 1) * Rnd + 65))
+        lbl3 = lbl3 & ch3
+    Else
+        ch = Format(Chr(Int(((Int(90 - 66) * Rnd + 66) - 65 + 1) * Rnd + 65)), "<")
+        lbl = lbl & ch
+        ch2 = Format(Chr(Int(((Int(90 - 66) * Rnd + 66) - 65 + 1) * Rnd + 65)), "<")
+        lbl2 = lbl2 & ch2
+        ch3 = Format(Chr(Int(((Int(90 - 66) * Rnd + 66) - 65 + 1) * Rnd + 65)), "<")
+        lbl3 = lbl3 & ch3
+    End If
+    Next x
+'Fourth MessageBox
+Call MsgBox("4: Done lbl's", vbOKOnly)
+
+If (i * pos) = 0 Then
+GoTo B_ERR
+Else
+buf = cm.Lines(i * pos, 1)
+End If
+
+'Lines to avoid moving...
+If Left(Trim(buf), 4) = "Else" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 3) = "For" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 2) = "If" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 3) = "Dim" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 3) = "Set" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 4) = "Next" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 3) = "End" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 2) = "Do" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 4) = "Loop" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 5) = "While" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 4) = "Wend" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 4) = "With" Then
+GoTo B_ERR
+ElseIf Left(Trim(buf), 3) = "Sub" Then
+GoTo B_ERR
+End If
+
+
+Call cm.DeleteLines(i * pos, 1)
+cm.InsertLines i * pos, "goto " & lbl
+cm.InsertLines i * pos + 1, lbl2 & ":"
+pos2 = pos + 10
+cm.InsertLines pos2 - 1, "goto " & lbl3
+cm.InsertLines pos2, lbl & ":"
+cm.InsertLines pos2 + 1, buf$
+cm.InsertLines pos2 + 2, "goto " & lbl2
+cm.InsertLines pos2 + 3, lbl3 & ":"
+'Fifth MessageBox
+Call MsgBox("5: Insertion Done", vbOKOnly)
+
+'On Error...
+B_ERR:
+lbl2 = ""
+lbl = ""
+lbl3 = ""
+buf = ""
+Next i
+'Sixth MessageBox
+Call MsgBox("6: Gto loop finished", vbOKOnly)
+End Sub
